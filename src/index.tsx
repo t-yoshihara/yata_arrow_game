@@ -7,6 +7,10 @@ import { createStore, compose } from 'redux';
 import { reducer } from './modules/BoardReducer';
 import { Provider } from 'react-redux';
 
+window.addEventListener('touchmove', event => {
+  event.preventDefault();
+}, true);
+
 const store = createStore(reducer,(window as any).__REDUX_DEVTOOLS_EXTENSION__ && (window as any).__REDUX_DEVTOOLS_EXTENSION__()
   );
 

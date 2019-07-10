@@ -4,7 +4,7 @@ import Board from '../components/Board'
 import { Dispatch } from 'react';
 import { Action } from 'redux';
 import Direction from '../types/Direction';
-import { putArrow, movePiece, selectSquare, unSelectSquare } from '../modules/BoardActions';
+import { putArrow, movePiece, selectSquare, unSelectSquare, MoveOnToNextPhase, moveOnToNextTurn } from '../modules/BoardActions';
 import { Position } from '../types/Position';
 
 const mapStateToProps = (state: State) => {
@@ -19,8 +19,15 @@ const mapDispatchToProps = (dispatch: Dispatch<Action>) => {
     return {
         selectSquare: (pos: Position) => {dispatch(selectSquare({pos:pos}))},
         unSelectSquare: (pos: Position) => {dispatch(unSelectSquare({pos:pos}))},
-        putArrow: (pos: Position, dir: Direction) => {dispatch(putArrow({pos: pos, direction:dir}))},
-        movePiece: (from: Position, to: Position, player_id: number) => {dispatch(movePiece({fromPos: from, toPos: to, player_id: player_id}))}
+        putArrow: (pos: Position, dir: Direction) => {
+            dispatch(putArrow({pos: pos, direction:dir}));
+            dispatch(MoveOnToNextPhase());
+        },
+        movePiece: (from: Position, to: Position, player_id: number) => {
+            dispatch(movePiece({fromPos: from, toPos: to, player_id: player_id}));
+            dispatch(moveOnToNextTurn());
+            dispatch(MoveOnToNextPhase());
+        }
     }
 }
 

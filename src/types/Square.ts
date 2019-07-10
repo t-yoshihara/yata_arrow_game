@@ -10,7 +10,7 @@ export enum SquareType {
 export type Square = {
     pos: Position,
     type: SquareType,
-    dir: Direction | null,
+    dir: Direction,
     player_id: number | null,
     canPut: boolean,
     isSelected: boolean
