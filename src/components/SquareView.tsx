@@ -39,8 +39,8 @@ class Component extends React.Component<Props> {
     }
 
     background = (square: Square): Color => {
+        if (square.isSelected) return '#FF5733';
         if (square.canPut) return '#FFC300';
-        if (square.isSelected) return '#FF5733'
         return '#FFFFFF';
     }
 
