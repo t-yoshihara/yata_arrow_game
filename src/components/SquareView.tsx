@@ -45,7 +45,6 @@ class Component extends React.Component<Props> {
     }
 
     render() {
-        const char = this.props.square.type
         return (
             <div className="square" style={{background: this.background(this.props.square)}} onTouchStart={(e) => this.props.onTouchStart(e)} onTouchEnd={(e) => this.props.onTouchEnd(e)}>
                 {this.getChar(this.props.square)}

@@ -63,24 +63,38 @@ const init = (): State => {
 }
 
 const updateCanPut = (state: State): State => {
-    return {
-        ...state,
-        board: state.board.map(row => {
-            return row.map(square => {
-                let canPut = false;
-                for(var dir in Direction) {
-                    if(!isNaN(Number(dir)))continue;
-                    if(square.pos.y === 0 || square.pos.y === MAP_SIZE_Y+1 || square.pos.x === 0 || square.pos.x === MAP_SIZE_X+1)continue;
-                    canPut = canPut || (state.board[square.pos.y + getPos(dir).y][square.pos.x + getPos(dir).x].type === SquareType.PIECE
-                                        && state.board[square.pos.y + getPos(dir).y][square.pos.x + getPos(dir).x].player_id === state.turn_player_id);
-                }
-                canPut = canPut && square.type === SquareType.EMPTY;                        
-                return {
-                    ...square,
-                    canPut: canPut
-                }
+    if (state.phase === Phase.PUT_ARROW) {
+        return {
+            ...state,
+            board: state.board.map(row => {
+                return row.map(square => {
+                    let canPut = false;
+                    for(var dir in Direction) {
+                        if(!isNaN(Number(dir)))continue;
+                        if(square.pos.y === 0 || square.pos.y === MAP_SIZE_Y+1 || square.pos.x === 0 || square.pos.x === MAP_SIZE_X+1)continue;
+                        canPut = canPut || (state.board[square.pos.y + getPos(dir).y][square.pos.x + getPos(dir).x].type === SquareType.PIECE
+                                            && state.board[square.pos.y + getPos(dir).y][square.pos.x + getPos(dir).x].player_id === state.turn_player_id);
+                    }
+                    canPut = canPut && square.type === SquareType.EMPTY;                        
+                    return {
+                        ...square,
+                        canPut: canPut
+                    }
+                })
             })
-        })
+        }
+    } else {
+        return {
+            ...state,
+            board: state.board.map(row => {
+                return row.map(square => {
+                    return {
+                        ...square,
+                        canPut: square.type === SquareType.PIECE && square.player_id === state.turn_player_id
+                    }
+                })
+            })
+        }
     }
 }
 
@@ -125,10 +139,10 @@ export const reducer = (state: State = init(), action: Actions): State => {
                 })
             }
         case 'MOVE_ON_TO_NEXT_PHASE':
-            return {
+            return updateCanPut({
                 ...state,
                 phase: state.phase === Phase.PUT_ARROW ? Phase.MOVE : Phase.PUT_ARROW
-            }
+            })
         case 'MOVE_ON_TO_NEXT_TURN':
             return updateCanPut({
                 ...state,

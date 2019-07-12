@@ -4,6 +4,7 @@ import Phase from '../types/Phase';
 import { Position } from '../types/Position';
 import Direction from '../types/Direction';
 import SquareView from './SquareView';
+import Arrow from './Arrow';
 import { MAP_SIZE_Y, MAP_SIZE_X, getPos } from '../Const';
 
 type Props = {
@@ -18,14 +19,16 @@ type Props = {
 
 type State = {
     touchPos?: Position,
-    isSelecting: boolean
+    isSelecting: boolean,
+    selectedPos: Position,
 }
 
 class Component extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
         this.state = {
-            isSelecting: false
+            isSelecting: false,
+            selectedPos: {x: 0, y: 0}
         }
     }
 
@@ -117,7 +120,8 @@ class Component extends React.Component<Props, State> {
         this.props.selectSquare(pos);
         this.setState({
             touchPos: {x: e.changedTouches[0].pageX, y: e.changedTouches[0].pageY},
-            isSelecting: true
+            isSelecting: true,
+            selectedPos: pos
         });
     }
 
@@ -138,7 +142,8 @@ class Component extends React.Component<Props, State> {
         this.props.selectSquare(pos);
         this.setState({
             touchPos: {x: e.changedTouches[0].pageX, y: e.changedTouches[0].pageY},
-            isSelecting: true
+            isSelecting: true,
+            selectedPos: pos
         });
     }
 
@@ -177,10 +182,34 @@ class Component extends React.Component<Props, State> {
         if(this.isLoss()) {
             console.log('lose');
         }
+        let dir={
+            up: false,
+            down: false,
+            left: false,
+            right: false
+        };
+        if (this.state.isSelecting) {
+            if(this.props.phase === Phase.PUT_ARROW) {
+                dir = {
+                    up: this.canPutArrow(this.state.selectedPos, Direction.UP),
+                    down: this.canPutArrow(this.state.selectedPos , Direction.DOWN),
+                    left: this.canPutArrow(this.state.selectedPos , Direction.LEFT),
+                    right: this.canPutArrow(this.state.selectedPos , Direction.RIGHT)
+                }
+            } else {
+                dir = {
+                    up: this.canMove(this.state.selectedPos, Direction.UP, this.props.turn_player_id),
+                    down: this.canMove(this.state.selectedPos, Direction.DOWN, this.props.turn_player_id),
+                    left: this.canMove(this.state.selectedPos, Direction.LEFT, this.props.turn_player_id),
+                    right: this.canMove(this.state.selectedPos, Direction.RIGHT, this.props.turn_player_id)
+                }
+            }
+        }
 
         return (
             <div>
                 {boardView}
+                <Arrow visible={this.state.isSelecting} dir={dir} pos={this.state.selectedPos}  />
             </div>
         )
     }
